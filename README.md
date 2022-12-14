@@ -1,5 +1,5 @@
 # Content Moderation for Profile Images
-This repo does content moderation for profile images/ image data in general. If any questions, please reach out to Data Science team (Sze Chi, Thulasiram, Chandan).
+This repo does content moderation for profile images/ image data in general.
 
 # Set-up .env file for testing in local
 There needs to be a `.env` file with following parameters.
@@ -28,7 +28,7 @@ ComposedNumReplicas=1
 ComposedMaxCon=100
 
 SnowflakeResultsQueue=content_moderation_profile-results_dev
-AiModelBucket=lomotif-datalake-dev
+AiModelBucket=datalake-dev
 ```
 
 # Additional variables for internal testing
@@ -121,29 +121,3 @@ python serve_tasks/tasks.py
 ```bash
 python serve_demo.py
 ```
-
-# More details about the output
-<!-- The output will be written to this table on Snowflake: `DS_CONTENT_MODERATION_TAGGING_1ST_LAYER` (In production). -->
-Example output upon sending a request to the deployment service:
-```python
-{'UID': '37217839', 'USERNAME': 'danysantynener07', 'IMAGE_URL': 'https://cdn.lomotif.com/user/profile/7c754bea1aa6672b/5e459c67de6fec5d.png', 'COUNTRY': 'co', 'EVENT_TIME': '2022-06-10 01:21:01', 'MESSAGE_RECEIVE_TIME': '2022-06-21 02:18:04.776753+00:00', 'TOTAL_DURATION': 1.208, 'MODEL_ATTRIBUTES': {'NN_DURATION': 0.053, 'NN_SAFE_SCORES': '0.9127', 'NN_UNSAFE_SCORES': '0.0873', 'NN_TO_BE_MODERATED': False, 'NN_PREDICTION_SUCCESS': True, 'NN_STATUS': 0, 'CLIP_DURATION': 0.048, 'CLIP_PREDICTION_SUCCESS': True, 'CLIP_TO_BE_MODERATED': False, 'CLIP_STATUS': 0, 'COOP_DURATION': 0.91, 'COOP_PREDICTION_SUCCESS': True, 'COOP_STATUS': 0, 'PREDICTED_TOP3_PRIMARY_CATEGORY': 'selfies, life-style, beauty-and-grooming', 'PREDICTED_TOP3_SECONDARY_CATEGORY': 'selfie, fashion, make-up', 'MFD_DURATION': 0.066, 'MFD_TO_BE_MODERATED': False, 'MFD_PREDICTION_SUCCESS': True, 'MFD_STATUS': 0, 'USER_ID': '37217839'}, 'PREDICTED_PRIMARY_CATEGORY': 'selfies, life-style', 'PREDICTED_SECONDARY_CATEGORY': 'selfie, fashion', 'MODEL_VERSION': '1.0.0', 'TO_BE_MODERATED': False}
-```
-- UID, USERNAME, IMAGE_URL, COUNTRY, EVENT_TIME: As per event_type=modify_user definition.
-- MESSAGE_RECEIVE_TIME: UTC time where kinesis message is received by the deployment service.
-- (NN/CLIP/COOP/MFD/TOTAL)_DURATION: Time in seconds taken by respective models.
-- NN_SAFE_SCORES: Nudenet safe scores per key frame.
-- NN_UNSAFE_SCORES: Nudenet unsafe scores per key frame.
-- (NN/CLIP/COOP/MFD)_TO_BE_MODERARED: True if needs to be moderated. Otherwise False.
-- PREDICTED_PRIMARY_CATEGORY: primary category prediction.
-- PREDICTED_SECONDARY_CATEGORY: secondary category prediction.
-- (NN/CLIP/COOP/MFD)_PREDICTION_SUCCESS: True if STATUS is 0. Otherwise False.
-- (NN/CLIP/COOP/MFD)_STATUS: 
-    - 0: Prediction successful. 
-    - 1: Not a video or image, prediction unsuccesful. 
-    - 403: Video clip file not found, prediction unsuccessful. Or Lomotif does not exist on S3, cannot be downloaded after retries, prediction unsuccessful.
-    - 4: Some unknown error in the model that was caught by the try...except... loop. Prediction unsucessful.
-    - 5: No key frames selected. Prediction unsucessful.
-
-
-
-
